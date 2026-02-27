@@ -26,8 +26,8 @@ When using the User details, always use the environment URL: {{environmentUrl}},
 # Export Dataverse Solution
 Please export the solution using the following configuration.
 @task("downloadSolution", {
-  "solution.solutionname": "",
-  "solution.foldername": "",
-  "solution.solution_unique_name": ""
+  "solution.solutionname": "CaseStudySolution",
+  "solution.foldername": "\main\org5df5c1dd",
+  "solution.solution_unique_name": "CaseStudySolution.zip"
 })
 
