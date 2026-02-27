@@ -26,13 +26,8 @@
   "capabilities": {
     "dynamicParameters": {
       "environmentUrl": {
-        name:"",
         "type": "string",
         "description": "Dynamics 365 environment URL provided by the user."
-      },
-      "solutionName": {
-        "type": "string",
-        "description": "Solution name to download, unpack, validate, pack, or publish."
       },
       "authentication": {
         "type": "object",
@@ -40,9 +35,21 @@
         "fields": {
           "applicationId": "string",
           "clientSecret": "string",
-          "tenantId": "string"
+          "tenantId": "string",
+          "username":"string",
+          "password":"string"
         }
-      }
+      },
+      "solution": {
+        "type": "string",
+        "description": "Solution name to download, unpack, validate, pack, or publish.",
+        "fields": {
+          "solutionname": "string",
+          "foldername": "string",
+          "solution_unique_name": "string"
+        }
+      },
+    
     }
   },
   "tasks": {
@@ -54,6 +61,7 @@
       ],
       "actions": [
         "pac auth create --url {{environmentUrl}} --applicationId {{authentication.applicationId}} --clientSecret {{authentication.clientSecret}} --tenant {{authentication.tenantId}}",
+        "pac auth create --environment {{environmentUrl}} --username {{username}} --password {{password}}",
         "pac org who"
       ]
     },
@@ -64,7 +72,8 @@
         "download solution=*"
       ],
       "actions": [
-        "pac solution export --name {{solutionName}} --outputDirectory ./export --managed false"
+        "pac solution export --name {{solution.solution_unique_name}} --outputFile "$(pwd)/{{solution.foldername}}/{{solution.solution_unique_name}}.zip",
+        "pac solution export --name {{solution.solution_unique_name}} --outputDirectory ./export --managed false"
       ]
     },
 
