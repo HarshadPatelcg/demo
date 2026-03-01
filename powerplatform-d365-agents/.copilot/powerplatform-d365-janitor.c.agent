@@ -1,13 +1,8 @@
 {
-  "description": "Perform ALM, cleanup, validation, packaging, and deployment tasks for Power Platform & Dynamics 365 CE using chat commands. Supports dynamic environment URLs, solution names, authentication parameters, and unpack/pack workflows.",
-  "name": "Power Platform / D365 CE Janitor",
-  "version": "1.0.0",
-  "agentType": "task-runner",
-  "runtime": {
-    "language": "nodejs",
-    "version": "18"
-  },
-  "permissions": {
+  "name": "PowerPlatformAgent",
+  "description": "Agent that performs Power Platform and Dataverse operations such as connect, list solutions, export solutions, import solutions.",
+
+   "permissions": {
     "allowedTools": [
       "runCommands",
       "terminalLastCommand",
@@ -60,7 +55,6 @@
         "connect auth=*"
       ],
       "actions": [
-        "pac auth create --url {{environmentUrl}} --applicationId {{authentication.applicationId}} --clientSecret {{authentication.clientSecret}} --tenant {{authentication.tenantId}}",
         "pac auth create --environment {{environmentUrl}} --username {{username}} --password {{password}}",
         "pac org who"
       ]
@@ -174,4 +168,5 @@
     "incrementalComponentEditing": true,
     "showDiagnosticsOnFailure": true
   }
+  
 }
