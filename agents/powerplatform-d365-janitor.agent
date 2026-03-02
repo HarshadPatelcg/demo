@@ -1,0 +1,172 @@
+{
+  "name": "PowerPlatformAgent",
+  "description": "Agent that performs Power Platform and Dataverse operations such as connect, list solutions, export solutions, import solutions.",
+
+   "permissions": {
+    "allowedTools": [
+      "runCommands",
+      "terminalLastCommand",
+      "terminalSelection",
+      "edit/editFiles",
+      "codebase",
+      "extensions",
+      "search",
+      "openSimpleBrowser",
+      "problems",
+      "new",
+      "web/fetch",
+      "microsoft.docs.mcp"
+    ]
+  },
+  "capabilities": {
+    "dynamicParameters": {
+      "environmentUrl": {
+        "type": "string",
+        "description": "Dynamics 365 environment URL provided by the user."
+      },
+      "authentication": {
+        "type": "object",
+        "description": "Authentication details including App ID, Client Secret, Tenant ID.",
+        "fields": {
+          "applicationId": "string",
+          "clientSecret": "string",
+          "tenantId": "string",
+          "username":"string",
+          "password":"string"
+        }
+      },
+      "solution": {
+        "type": "string",
+        "description": "Solution name to download, unpack, validate, pack, or publish.",
+        "fields": {
+          "solutionname": "string",
+          "foldername": "string",
+          "solution_unique_name": "string"
+        }
+      },
+    
+    }
+  },
+  "tasks": {
+    "connectEnvironment": {
+      "description": "Connect to a D365 environment using PAC CLI with dynamic parameters.",
+      "commandPattern": [
+        "connect env=*",
+        "connect auth=*"
+      ],
+      "actions": [
+        "pac auth create --environment {{environmentUrl}} --username {{username}} --password {{password}}",
+        "pac org who"
+      ]
+    },
+
+    "downloadSolution": {
+      "description": "Download unmanaged or managed solutions from Power Platform.",
+      "commandPattern": [
+        "download solution=*"
+      ],
+      "actions": [
+        "pac solution export --name {{solution.solution_unique_name}} --outputFile "$(pwd)/{{solution.foldername}}/{{solution.solution_unique_name}}.zip",
+        "pac solution export --name {{solution.solution_unique_name}} --outputDirectory ./export --managed false"
+      ]
+    },
+
+    "unpackSolution": {
+      "description": "Unpack solution ZIP into source folder for readable editing.",
+      "commandPattern": [
+        "unpack solution",
+        "unpack"
+      ],
+      "actions": [
+        "pac solution unpack --zipFile ./export/solution.zip --folder ./src --allowDelete true"
+      ]
+    },
+
+    "openSolution": {
+      "description": "Open the unpacked solution folder inside a workspace.",
+      "commandPattern": [
+        "open solution",
+        "open src"
+      ],
+      "actions": [
+        "vscodeAPI.openFolder ./src"
+      ]
+    },
+
+    "manualEdit": {
+      "description": "Apply manual edits to Ribbon, Sitemap, Form XML, JSON, PCF manifest, or other metadata.",
+      "commandPattern": [
+        "modify *",
+        "edit *",
+        "fix *"
+      ],
+      "actions": [
+        "edit/editFiles"
+      ]
+    },
+
+    "validateSolution": {
+      "description": "Validate all XML, JSON, and Dynamics-specific metadata.",
+      "commandPattern": [
+        "validate",
+        "validate solution",
+        "validate xml",
+        "validate json",
+        "validate pcf"
+      ],
+
+      "actions": [
+        "runCommands xmlstarlet val {{file}}",
+        "runCommands xmlstarlet fo --indent-spaces 2 {{file}}",
+        "runCommands jq . {{file}}",
+        "microsoft.docs.mcp search 'Dynamics 365 customization schema'",
+        "microsoft.docs.mcp search 'RibbonDiffXML structure'",
+        "microsoft.docs.mcp search 'Model-driven form XML requirements'"
+      ]
+    },
+
+    "packSolution": {
+      "description": "Repack solution into ZIP for deployment.",
+      "commandPattern": [
+        "pack",
+        "pack solution"
+      ],
+      "actions": [
+        "pac solution pack --zipFile ./dist/solution.zip --folder ./src"
+      ]
+    },
+
+    "publishSolution": {
+      "description": "Import the repacked solution to Dynamics and publish customizations.",
+      "commandPattern": [
+        "publish solution=*",
+        "deploy solution=*"
+      ],
+      "actions": [
+        "pac solution import --path ./dist/solution.zip",
+        "pac solution publish"
+      ]
+    },
+
+    "testSolution": {
+      "description": "Run functional validation tests inside D365.",
+      "commandPattern": [
+        "test solution",
+        "validate deployment"
+      ],
+      "actions": [
+        "openSimpleBrowser {{environmentUrl}}",
+        "search 'Model-driven app load validation best practices'",
+        "search 'PCF runtime troubleshooting'"
+      ]
+    }
+  },
+
+  "executionRules": {
+    "validationRequiredBeforePack": true,
+    "preventProdDeployWithoutPrompt": true,
+    "incrementalComponentEditing": true,
+    "showDiagnosticsOnFailure": true
+  }
+  
+}
