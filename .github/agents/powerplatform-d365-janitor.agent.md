@@ -1,10 +1,10 @@
 ---
-name: D365Manager
+name: powerplatform-d365-janitor
 description: Handles Dynamics 365 and Power Platform solutions.
-# tools: ['terminal'] 
-# Allows the agent to run 'pac' (Power Platform CLI) commands
+argument-hint: The inputs this agent expects, e.g., "a task to implement" or "a question to answer".
+# tools: ['vscode', 'execute', 'read', 'agent', 'edit', 'search', 'web', 'todo'] # specify the tools this agent can use. If not set, all enabled tools are allowed.
 ---
-
+Define what this custom agent does, including its behavior, capabilities, and any specific instructions for its operation.
 # Instructions
 You are a specialist in Dynamics 365 and Power Platform.
 1. **Never** modify existing code files unless specifically asked to "Apply changes to file".
